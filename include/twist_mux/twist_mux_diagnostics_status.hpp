@@ -44,6 +44,7 @@
 
 namespace twist_mux
 {
+template<typename MsgT>
 struct TwistMuxDiagnosticsStatus
 {
   typedef std::shared_ptr<TwistMuxDiagnosticsStatus> Ptr;
@@ -53,24 +54,24 @@ struct TwistMuxDiagnosticsStatus
   rclcpp::Time last_loop_update;
   double main_loop_time;
 
-  LockTopicHandle::priority_type priority;
+  typename LockTopicHandle<MsgT>::priority_type priority;
 
-  std::shared_ptr<TwistMux::velocity_topic_container> velocity_hs;
-  std::shared_ptr<TwistMux::lock_topic_container> lock_hs;
+  std::shared_ptr<typename TwistMux<MsgT>::velocity_topic_container> velocity_hs;
+  std::shared_ptr<typename TwistMux<MsgT>::lock_topic_container> lock_hs;
 
-  TwistMuxDiagnosticsStatus()
+  TwistMuxDiagnosticsStatus<MsgT>()
   : reading_age(0),
     last_loop_update(rclcpp::Clock().now()),
     main_loop_time(0),
     priority(0)
   {
-    velocity_hs = std::make_shared<TwistMux::velocity_topic_container>();
-    lock_hs = std::make_shared<TwistMux::lock_topic_container>();
+    velocity_hs = std::make_shared<typename TwistMux<MsgT>::velocity_topic_container>();
+    lock_hs = std::make_shared<typename TwistMux<MsgT>::lock_topic_container>();
   }
 };
 
-typedef TwistMuxDiagnosticsStatus::Ptr TwistMuxDiagnosticsStatusPtr;
-typedef TwistMuxDiagnosticsStatus::ConstPtr TwistMuxDiagnosticsStatusConstPtr;
+//typedef TwistMuxDiagnosticsStatus::Ptr TwistMuxDiagnosticsStatusPtr;
+//typedef TwistMuxDiagnosticsStatus::ConstPtr TwistMuxDiagnosticsStatusConstPtr;
 
 }  // namespace twist_mux
 

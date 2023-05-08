@@ -41,7 +41,8 @@
 
 namespace twist_mux
 {
-TwistMuxDiagnostics::TwistMuxDiagnostics(TwistMux * mux)
+template<typename MsgT>
+TwistMuxDiagnostics<MsgT>::TwistMuxDiagnostics(TwistMux<MsgT> * mux)
 {
   diagnostic_ = std::make_shared<diagnostic_updater::Updater>(mux);
   status_ = std::make_shared<status_type>();
@@ -50,12 +51,14 @@ TwistMuxDiagnostics::TwistMuxDiagnostics(TwistMux * mux)
   diagnostic_->setHardwareID("none");
 }
 
-void TwistMuxDiagnostics::update()
+template<typename MsgT>
+void TwistMuxDiagnostics<MsgT>::update()
 {
   diagnostic_->force_update();
 }
 
-void TwistMuxDiagnostics::updateStatus(const status_type::ConstPtr & status)
+template<typename MsgT>
+void TwistMuxDiagnostics<MsgT>::updateStatus(const typename status_type::ConstPtr & status)
 {
   status_->velocity_hs = status->velocity_hs;
   status_->lock_hs = status->lock_hs;
@@ -67,7 +70,8 @@ void TwistMuxDiagnostics::updateStatus(const status_type::ConstPtr & status)
   update();
 }
 
-void TwistMuxDiagnostics::diagnostics(diagnostic_updater::DiagnosticStatusWrapper & stat)
+template<typename MsgT>
+void TwistMuxDiagnostics<MsgT>::diagnostics(diagnostic_updater::DiagnosticStatusWrapper & stat)
 {
   /// Check if the loop period is quick enough
   if (status_->main_loop_time > MAIN_LOOP_TIME_MIN) {
@@ -100,4 +104,8 @@ void TwistMuxDiagnostics::diagnostics(diagnostic_updater::DiagnosticStatusWrappe
   stat.add("data age in [sec]", status_->reading_age);
 }
 
+template class TwistMuxDiagnostics<geometry_msgs::msg::Twist>;
+template class TwistMuxDiagnosticsStatus<geometry_msgs::msg::Twist>;
+template class TwistMuxDiagnostics<std_msgs::msg::String>;
+template class TwistMuxDiagnosticsStatus<std_msgs::msg::String>;
 }  // namespace twist_mux

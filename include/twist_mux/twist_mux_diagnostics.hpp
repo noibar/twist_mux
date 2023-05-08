@@ -43,22 +43,23 @@
 
 namespace twist_mux
 {
+template<typename MsgT>
 class TwistMuxDiagnostics
 {
 public:
-  typedef TwistMuxDiagnosticsStatus status_type;
+  typedef TwistMuxDiagnosticsStatus<MsgT> status_type;
 
   static constexpr double MAIN_LOOP_TIME_MIN = 0.2;   // [s]
   static constexpr double READING_AGE_MIN = 3.0;     // [s]
 
-  explicit TwistMuxDiagnostics(TwistMux * mux);
+  explicit TwistMuxDiagnostics(TwistMux<MsgT> * mux);
   virtual ~TwistMuxDiagnostics() = default;
 
   void diagnostics(diagnostic_updater::DiagnosticStatusWrapper & stat);
 
   void update();
 
-  void updateStatus(const status_type::ConstPtr & status);
+  void updateStatus(const typename status_type::ConstPtr & status);
 
 private:
   /**

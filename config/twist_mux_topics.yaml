@@ -8,6 +8,10 @@
 twist_mux:
   ros__parameters:
     topics:
+      test:
+        topic   : topic
+        timeout : 0.5
+        priority: 255
       navigation:
         topic   : nav_vel
         timeout : 0.5

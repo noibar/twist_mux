@@ -40,7 +40,9 @@ int main(int argc, char * argv[])
 {
   rclcpp::init(argc, argv);
 
-  auto twist_mux_node = std::make_shared<twist_mux::TwistMux>();
+  std::cout << "Hello World!" << std::endl;
+  auto twist_mux_node = std::make_shared<twist_mux::TwistMux<std_msgs::msg::String>>();
+  //auto twist_mux_node = std::make_shared<twist_mux::TwistMux<geometry_msgs::msg::Twist>>();
 
   twist_mux_node->init();
 

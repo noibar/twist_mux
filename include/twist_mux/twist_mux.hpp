@@ -37,6 +37,7 @@
 
 #include <rclcpp/rclcpp.hpp>
 #include <std_msgs/msg/bool.hpp>
+#include <std_msgs/msg/string.hpp>
 #include <geometry_msgs/msg/twist.hpp>
 
 #include <list>
@@ -47,39 +48,48 @@ using std::chrono_literals::operator""s;
 
 namespace twist_mux
 {
+
 // Forwarding declarations:
+template<typename MsgT>
 class TwistMuxDiagnostics;
+template<typename MsgT>
 struct TwistMuxDiagnosticsStatus;
+template <typename MsgT>
 class VelocityTopicHandle;
+template <typename MsgT>
 class LockTopicHandle;
 
+//template <typename MsgT>
+//constexpr std::chrono::duration<int64_t> typename TwistMux<MsgT>::DIAGNOSTICS_PERIOD;
 /**
  * @brief The TwistMux class implements a top-level twist multiplexer module
  * that priorize different velocity command topic inputs according to locks.
  */
+template<typename MsgT>
 class TwistMux : public rclcpp::Node
 {
 public:
+
   template<typename T>
   using handle_container = std::list<T>;
 
-  using velocity_topic_container = handle_container<VelocityTopicHandle>;
-  using lock_topic_container = handle_container<LockTopicHandle>;
+  using velocity_topic_container = handle_container<VelocityTopicHandle<MsgT>>;
+  using lock_topic_container = handle_container<LockTopicHandle<MsgT>>;
 
   TwistMux();
   ~TwistMux() = default;
 
   void init();
 
-  bool hasPriority(const VelocityTopicHandle & twist);
+  bool hasPriority(const VelocityTopicHandle<MsgT> & twist);
 
-  void publishTwist(const geometry_msgs::msg::Twist::ConstSharedPtr & msg);
+  void publishTwist(const typename MsgT::ConstSharedPtr & msg);
 
   void updateDiagnostics();
 
 protected:
-  typedef TwistMuxDiagnostics diagnostics_type;
-  typedef TwistMuxDiagnosticsStatus status_type;
+  typedef TwistMuxDiagnostics<MsgT> diagnostics_type;
+  typedef TwistMuxDiagnosticsStatus<MsgT> status_type;
 
   rclcpp::TimerBase::SharedPtr diagnostics_timer_;
 
@@ -94,9 +104,9 @@ protected:
   std::shared_ptr<velocity_topic_container> velocity_hs_;
   std::shared_ptr<lock_topic_container> lock_hs_;
 
-  rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr cmd_pub_;
+  typename rclcpp::Publisher<MsgT>::SharedPtr cmd_pub_;
 
-  geometry_msgs::msg::Twist last_cmd_;
+  MsgT last_cmd_;
 
   template<typename T>
   void getTopicHandles(const std::string & param_name, handle_container<T> & topic_hs);
